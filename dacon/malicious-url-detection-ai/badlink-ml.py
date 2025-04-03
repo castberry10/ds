@@ -1,7 +1,32 @@
+# 악성 URL 분류 AI 경진대회
+# [Private 3rd] 사전학습모델 앙상블 
+# [환경] 
+# OS: Ubuntu 24.04.2 LTS
+# CPU:  AMD Ryzen 9 9950X 16-Core Processor
+# RAM: 64GB
+# GPU:  NVIDIA GeForce RTX 4080 SUPER 16GB
+
+# Python 버전: 3.12.3
+# CUDA 버전: 12.8
+
+# Python 패키지 버전
+# scikit-learn 1.5.2
+# pandas 2.2.3
+# numpy 1.26.4
+# autogluon 1.2
+
+# [사전학습모델 출처]
+# https://huggingface.co/r3ddkahili/final-complete-malicious-url-model
+# https://huggingface.co/elftsdmr/malware-url-detect
+# https://huggingface.co/kmack/malicious-url-detection
+
+
 # !pip install numpy==1.26.4
 # !pip install pandas==2.2.3
 # !pip install scikit-learn==1.5.2
 # !pip install autogluon==1.2
+
+# 위 코드를 먼저 실행하여 필요한 패키지를 설치해주세요. 
 
 import numpy as np
 import pandas as pd
@@ -12,9 +37,9 @@ from autogluon.multimodal import MultiModalPredictor
 
 warnings.filterwarnings('ignore')
 
-train_path = './train.csv'
-test_path = './test.csv'
-sample_submission_path = './sample_submission.csv'
+train_path = './data/train.csv'
+test_path = './data/test.csv'
+sample_submission_path = './data/sample_submission.csv'
 
 train_df = pd.read_csv(train_path)
 test_df = pd.read_csv(test_path)
@@ -25,7 +50,7 @@ test_df['URL'] = test_df['URL'].str.replace(r'\[\.\]', '.', regex=True)
 weights = compute_class_weight(class_weight='balanced', 
                                classes=np.unique(train_df['label']), 
                                y=train_df['label'].values)
-weights /= weights.sum()
+weights = weights / weights.sum()
 weights = list(weights)
 
 checkpoint_names = [
